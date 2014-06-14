@@ -1,0 +1,8 @@
+<Addon Name="VikingInventory" Version="1" Author="" APIVersion="8" Description="">
+    <Script Name="VikingInventoryBag.lua"/>
+    <Script Name="VikingItemPreview.lua"/>
+    <Script Name="VikingImprovedSalvage.lua"/>
+    <Form Name="VikingInventoryBag.xml"/>
+    <Form Name="VikingItemPreview.xml"/>
+    <Form Name="VikingImprovedSalvage.xml"/>
+</Addon>
