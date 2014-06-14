@@ -17,7 +17,7 @@ function VikingImprovedSalvage:new(o)
 end
 
 function VikingImprovedSalvage:OnLoad()
-	self.xmlDoc = XmlDoc.CreateFromFile("ImprovedSalvage.xml")
+	self.xmlDoc = XmlDoc.CreateFromFile("VikingImprovedSalvage.xml")
 	self.xmlDoc:RegisterCallback("OnDocumentReady", self) 
 end
 
@@ -31,7 +31,7 @@ function VikingImprovedSalvage:OnDocumentReady()
 	Apollo.RegisterEventHandler("RequestSalvageAll", "OnSalvageAll", self) -- using this for bag changes
 	Apollo.RegisterSlashCommand("salvageall", "OnSalvageAll", self)
 
-	self.wndMain = Apollo.LoadForm(self.xmlDoc, "ImprovedSalvageForm", nil, self)
+	self.wndMain = Apollo.LoadForm(self.xmlDoc, "VikingImprovedSalvageForm", nil, self)
 	self.xmlDoc = nil
 	self.wndItemDisplay = self.wndMain:FindChild("ItemDisplayWindow")
 	

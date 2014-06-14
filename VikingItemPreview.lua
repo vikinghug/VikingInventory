@@ -26,7 +26,7 @@ local knSaveVersion
 -----------------------------------------------------------------------------------------------
 -- Initialization
 -----------------------------------------------------------------------------------------------
-function ItemPreview:new(o)
+function VikingItemPreview:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
@@ -36,11 +36,11 @@ function ItemPreview:new(o)
     return o
 end
 
-function ItemPreview:Init()
+function VikingItemPreview:Init()
     Apollo.RegisterAddon(self)
 end
 
-function ItemPreview:OnSave(eType)
+function VikingItemPreview:OnSave(eType)
 	if eType ~= GameLib.CodeEnumAddonSaveLevel.Account then
 		return
 	end
@@ -56,7 +56,7 @@ function ItemPreview:OnSave(eType)
 	return tSaved
 end
 
-function ItemPreview:OnRestore(eType, tSavedData)
+function VikingItemPreview:OnRestore(eType, tSavedData)
 	if not tSavedData or tSavedData.nSaveVersion ~= knSaveVersion then
 		return
 	end
@@ -70,12 +70,12 @@ end
 -----------------------------------------------------------------------------------------------
 -- ItemPreview OnLoad
 -----------------------------------------------------------------------------------------------
-function ItemPreview:OnLoad()
-	self.xmlDoc = XmlDoc.CreateFromFile("ItemPreview.xml")
+function VikingItemPreview:OnLoad()
+	self.xmlDoc = XmlDoc.CreateFromFile("VikingItemPreview.xml")
 	self.xmlDoc:RegisterCallback("OnDocumentReady", self) 
 end
 
-function ItemPreview:OnDocumentReady()
+function VikingItemPreview:OnDocumentReady()
 	if  self.xmlDoc == nil then
 		return
 	end
@@ -90,7 +90,7 @@ end
 -- ItemPreview Functions
 -----------------------------------------------------------------------------------------------
 -- Define general functions here
-function ItemPreview:OnShowItemInDressingRoom(item)
+function VikingItemPreview:OnShowItemInDressingRoom(item)
 	if self.wndMain ~= nil then
 		self:OnWindowClosed()
 	end
@@ -99,7 +99,7 @@ function ItemPreview:OnShowItemInDressingRoom(item)
 		return
 	end
 
-	self.wndMain = Apollo.LoadForm(self.xmlDoc, "ItemPreviewForm", "TooltipStratum", self)
+	self.wndMain = Apollo.LoadForm(self.xmlDoc, "VikingItemPreviewForm", "TooltipStratum", self)
 	local nWndLeft, nWndTop, nWndRight, nWndBottom = self.wndMain:GetRect()
 	local nWndWidth = nWndRight - nWndLeft
 	local nWndHeight = nWndBottom - nWndTop
@@ -128,7 +128,7 @@ function ItemPreview:OnShowItemInDressingRoom(item)
 	self.wndMain:Show(true)
 end
 
-function ItemPreview:HelperCheckForWeapon(eItemType)
+function VikingItemPreview:HelperCheckForWeapon(eItemType)
 	local bIsWeapon = false
 
 	if eItemType >= Item.CodeEnumItemType.WeaponMHPistols and eItemType <= Item.CodeEnumItemType.WeaponMHSword then
@@ -138,7 +138,7 @@ function ItemPreview:HelperCheckForWeapon(eItemType)
 	return bIsWeapon
 end
 
-function ItemPreview:HelperFormatSheathButton(bSheathed)
+function VikingItemPreview:HelperFormatSheathButton(bSheathed)
 	if bSheathed == true then
 		self.wndMain:FindChild("SheathButton"):SetText(Apollo.GetString("Inventory_DrawWeapons"))
 	else
@@ -146,7 +146,7 @@ function ItemPreview:HelperFormatSheathButton(bSheathed)
 	end
 end
 
-function ItemPreview:HelperValidateSlot(item)
+function VikingItemPreview:HelperValidateSlot(item)
 	local bVisibleSlot = false
 	local bRightClassOrProf = false
 	local tProficiency = item:GetProficiencyInfo()
@@ -180,7 +180,7 @@ end
 -----------------------------------------------------------------------------------------------
 -- ItemPreviewForm Functions
 -----------------------------------------------------------------------------------------------
-function ItemPreview:OnWindowClosed( wndHandler, wndControl )
+function VikingItemPreview:OnWindowClosed( wndHandler, wndControl )
 	if self.wndMain ~= nil then
 		--self.wndMain:Close()
 		self.locSavedWindowLoc = self.wndMain:GetLocation()
@@ -189,16 +189,16 @@ function ItemPreview:OnWindowClosed( wndHandler, wndControl )
 	end
 end
 
-function ItemPreview:OnToggleSheathButton( wndHandler, wndControl, eMouseButton )
+function VikingItemPreview:OnToggleSheathButton( wndHandler, wndControl, eMouseButton )
 	local bWeapon = wndControl:IsChecked()
 	self.wndMain:FindChild("PreviewWindow"):SetSheathed(bWeapon)
 end
 
-function ItemPreview:OnCloseBtn( wndHandler, wndControl, eMouseButton )
+function VikingItemPreview:OnCloseBtn( wndHandler, wndControl, eMouseButton )
 	self:OnWindowClosed()
 end
 
-function ItemPreview:OnToggleSheathed( wndHandler, wndControl, eMouseButton )
+function VikingItemPreview:OnToggleSheathed( wndHandler, wndControl, eMouseButton )
 	local bSheathed = not self.bSheathed
 	self.wndMain:FindChild("PreviewWindow"):SetSheathed(bSheathed)
 	self:HelperFormatSheathButton(bSheathed)
@@ -206,24 +206,24 @@ function ItemPreview:OnToggleSheathed( wndHandler, wndControl, eMouseButton )
 	self.bSheathed = bSheathed
 end
 
-function ItemPreview:OnRotateRight()
+function VikingItemPreview:OnRotateRight()
 	self.wndMain:FindChild("PreviewWindow"):ToggleLeftSpin(true)
 end
 
-function ItemPreview:OnRotateRightCancel()
+function VikingItemPreview:OnRotateRightCancel()
 	self.wndMain:FindChild("PreviewWindow"):ToggleLeftSpin(false)
 end
 
-function ItemPreview:OnRotateLeft()
+function VikingItemPreview:OnRotateLeft()
 	self.wndMain:FindChild("PreviewWindow"):ToggleRightSpin(true)
 end
 
-function ItemPreview:OnRotateLeftCancel()
+function VikingItemPreview:OnRotateLeftCancel()
 	self.wndMain:FindChild("PreviewWindow"):ToggleRightSpin(false)
 end
 
 -----------------------------------------------------------------------------------------------
--- ItemPreview Instance
+-- VikingItemPreview Instance
 -----------------------------------------------------------------------------------------------
-local ItemPreviewInst = ItemPreview:new()
+local ItemPreviewInst = VikingItemPreview:new()
 ItemPreviewInst:Init()

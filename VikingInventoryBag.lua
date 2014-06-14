@@ -5,12 +5,12 @@ require "Window"
 require "Money"
 
 local VikingInventoryBag = {}
-local VikingknSmallIconOption = 42
-local VikingknLargeIconOption = 48
-local VikingknMaxBags = 4 -- how many bags can the player have
-local VikingknSaveVersion = 3
+local knSmallIconOption = 42
+local knLargeIconOption = 48
+local knMaxBags = 4 -- how many bags can the player have
+local knSaveVersion = 3
 
-local VikingkarCurrency =  	-- Alt currency table; re-indexing the enums so they don't have to be in sequence code-side (and removing cash)
+local karCurrency =  	-- Alt currency table; re-indexing the enums so they don't have to be in sequence code-side (and removing cash)
 {						-- To add a new currency just add an entry to the table; the UI will do the rest. Idx == 1 will be the default one shown
 	{eType = Money.CodeEnumCurrencyType.Renown, 			strTitle = Apollo.GetString("CRB_Renown"), 				strDescription = Apollo.GetString("CRB_Renown_Desc")},
 	{eType = Money.CodeEnumCurrencyType.ElderGems, 			strTitle = Apollo.GetString("CRB_Elder_Gems"), 			strDescription = Apollo.GetString("CRB_Elder_Gems_Desc")},
@@ -73,7 +73,7 @@ end
 
 
 function VikingInventoryBag:OnLoad()
-	self.xmlDoc = XmlDoc.CreateFromFile("InventoryBag.xml")
+	self.xmlDoc = XmlDoc.CreateFromFile("VikingInventoryBag.xml")
 	self.xmlDoc:RegisterCallback("OnDocumentReady", self) 
 end
 
@@ -167,7 +167,7 @@ end
 local ktSortFunctions = {fnSortItemsByName, fnSortItemsByCategory, fnSortItemsByQuality}
 
 -- TODO: Mark items as viewed
-function InventoryBag:OnDocumentReady()
+function VikingInventoryBag:OnDocumentReady()
 	if  self.xmlDoc == nil then
 		return
 	end
@@ -205,7 +205,7 @@ function InventoryBag:OnDocumentReady()
 
 	self.wndDeleteConfirm 	= Apollo.LoadForm(self.xmlDoc, "InventoryDeleteNotice", nil, self)
 	self.wndSalvageConfirm 	= Apollo.LoadForm(self.xmlDoc, "InventorySalvageNotice", nil, self)
-	self.wndMain 			= Apollo.LoadForm(self.xmlDoc, "InventoryBag", nil, self)
+	self.wndMain 			= Apollo.LoadForm(self.xmlDoc, "VikingInventoryBag", nil, self)
 	self.wndMain:FindChild("VirtualInvToggleBtn"):AttachWindow(self.wndMain:FindChild("VirtualInvContainer"))
 	self.wndMain:Show(false, true)
 	self.wndSalvageConfirm:Show(false, true)
@@ -268,20 +268,20 @@ function InventoryBag:OnDocumentReady()
 	self.wndIconBtnSortDropDown:AttachWindow(self.wndIconBtnSortDropDown:FindChild("ItemSortPrompt"))
 end
 
-function InventoryBag:OnInterfaceMenuListHasLoaded()
+function VikingInventoryBag:OnInterfaceMenuListHasLoaded()
 	Event_FireGenericEvent("InterfaceMenuList_NewAddOn", Apollo.GetString("InterfaceMenu_Inventory"), {"InterfaceMenu_ToggleInventory", "Inventory", "Icon_Windows32_UI_CRB_InterfaceMenu_Inventory"})
 end
 
-function InventoryBag:OnWindowManagementReady()
+function VikingInventoryBag:OnWindowManagementReady()
 	Event_FireGenericEvent("WindowManagementAdd", {wnd = self.wndMain, strName = Apollo.GetString("InterfaceMenu_Inventory")})
 end
 	
-function InventoryBag:OnCharacterCreated()
+function VikingInventoryBag:OnCharacterCreated()
 	self:OnPlayerCurrencyChanged()
 	self:UpdateTitle()
 end
 
-function InventoryBag:OnToggleVisibility()
+function VikingInventoryBag:OnToggleVisibility()
 	if self.wndMain:IsShown() then
 		self.wndMain:Close()
 		Sound.Play(Sound.PlayUIBagClose)
@@ -305,7 +305,7 @@ function InventoryBag:OnToggleVisibility()
 	end
 end
 
-function InventoryBag:OnToggleVisibilityAlways()
+function VikingInventoryBag:OnToggleVisibilityAlways()
 	self.wndMain:Show(true)
 	self.wndMain:ToFront()
 	Apollo.StartTimer("InventoryUpdateTimer")
@@ -322,22 +322,22 @@ function InventoryBag:OnToggleVisibilityAlways()
 	end
 end
 
-function InventoryBag:OnLevelUpUnlock_Inventory_Salvage()
+function VikingInventoryBag:OnLevelUpUnlock_Inventory_Salvage()
 	self:OnToggleVisibilityAlways()
 end
 
-function InventoryBag:OnLevelUpUnlock_Path_Item(itemFromPath)
+function VikingInventoryBag:OnLevelUpUnlock_Path_Item(itemFromPath)
 	self:OnToggleVisibilityAlways()
 end
 
 -----------------------------------------------------------------------------------------------
 -- Main Update Timer
 -----------------------------------------------------------------------------------------------
-function InventoryBag:OnInventoryClosed( wndHandler, wndControl )
+function VikingInventoryBag:OnInventoryClosed( wndHandler, wndControl )
 	self.wndMain:FindChild("MainBagWindow"):MarkAllItemsAsSeen()
 end
 
-function InventoryBag:OnPlayerCurrencyChanged()
+function VikingInventoryBag:OnPlayerCurrencyChanged()
 	self.wndMain:FindChild("MainCashWindow"):SetAmount(GameLib.GetPlayerCurrency(), true)
 		--Alt Currency stuff
 	for key, wndCurr in pairs(self.wndMain:FindChild("OptionsConfigureCurrencyList"):GetChildren()) do
@@ -345,11 +345,11 @@ function InventoryBag:OnPlayerCurrencyChanged()
 	end
 end
 
-function InventoryBag:UpdateTitle()
+function VikingInventoryBag:UpdateTitle()
 	self.wndMain:FindChild("InventoryTitleText"):SetText(String_GetWeaselString(Apollo.GetString("Inventory_TitleText"), GameLib.GetPlayerUnit()))
 end
 
-function InventoryBag:UpdateBagSlotItems() -- update our bag display
+function VikingInventoryBag:UpdateBagSlotItems() -- update our bag display
 	local strEmptyBag = Apollo.GetString("Inventory_EmptySlot")
 	local nOldBagCount = self.nEquippedBagCount -- record the old count
 
@@ -376,22 +376,22 @@ function InventoryBag:UpdateBagSlotItems() -- update our bag display
 	end
 end
 
-function InventoryBag:OnBagBtnMouseEnter(wndHandler, wndControl)	
+function VikingInventoryBag:OnBagBtnMouseEnter(wndHandler, wndControl)	
 end
 
-function InventoryBag:OnBagBtnMouseExit(wndHandler, wndControl)
+function VikingInventoryBag:OnBagBtnMouseExit(wndHandler, wndControl)
 end
 
 -----------------------------------------------------------------------------------------------
 -- Drawing Bag Slots
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnMainWindowMouseResized()
+function VikingInventoryBag:OnMainWindowMouseResized()
 	self:UpdateSquareSize()
 	self.wndMain:FindChild("VirtualInvItems"):ArrangeChildrenHorz(1)
 end
 
-function InventoryBag:UpdateSquareSize()
+function VikingInventoryBag:UpdateSquareSize()
 	if not self.wndMain then
 		return
 	end
@@ -405,12 +405,12 @@ end
 -- Options
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnBGBottomCashBtnToggle(wndHandler, wndControl)
+function VikingInventoryBag:OnBGBottomCashBtnToggle(wndHandler, wndControl)
 	self.wndMain:FindChild("OptionsBtn"):SetCheck(wndHandler:IsChecked())
 	self:OnOptionsMenuToggle()
 end
 
-function InventoryBag:OnOptionsMenuToggle(wndHandler, wndControl) -- OptionsBtn
+function VikingInventoryBag:OnOptionsMenuToggle(wndHandler, wndControl) -- OptionsBtn
 	self.wndMain:FindChild("BGBottomCashBtn"):SetCheck(self.wndMain:FindChild("OptionsBtn"):IsChecked())
 	self.wndMain:FindChild("OptionsContainer"):Show(self.wndMain:FindChild("OptionsBtn"):IsChecked())
 
@@ -426,13 +426,13 @@ function InventoryBag:OnOptionsMenuToggle(wndHandler, wndControl) -- OptionsBtn
 	end
 end
 
-function InventoryBag:OnOptionsCloseClick()
+function VikingInventoryBag:OnOptionsCloseClick()
 	self.wndMain:FindChild("BGBottomCashBtn"):SetCheck(false)
 	self.wndMain:FindChild("OptionsBtn"):SetCheck(false)
 	self:OnOptionsMenuToggle()
 end
 
-function InventoryBag:OnOptionsAddSizeRows()
+function VikingInventoryBag:OnOptionsAddSizeRows()
 	if self.nBoxSize == knSmallIconOption then
 		self.nBoxSize = knLargeIconOption
 		self:OnMainWindowMouseResized()
@@ -440,7 +440,7 @@ function InventoryBag:OnOptionsAddSizeRows()
 	end
 end
 
-function InventoryBag:OnOptionsRemoveSizeRows()
+function VikingInventoryBag:OnOptionsRemoveSizeRows()
 	if self.nBoxSize == knLargeIconOption then
 		self.nBoxSize = knSmallIconOption
 		self:OnMainWindowMouseResized()
@@ -452,7 +452,7 @@ end
 -- Alt Currency Window Functions
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:UpdateAltCash(wndHandler, wndControl) -- Also from PickerEntryBtn
+function VikingInventoryBag:UpdateAltCash(wndHandler, wndControl) -- Also from PickerEntryBtn
 	local tData = karCurrency[wndHandler:FindChild("PickerEntryBtn"):GetData()]
 
 	if wndHandler:FindChild("PickerEntryBtn"):IsChecked() then
@@ -471,7 +471,7 @@ end
 -- Supply Satchel
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnToggleSupplySatchel(wndHandler, wndControl)
+function VikingInventoryBag:OnToggleSupplySatchel(wndHandler, wndControl)
 	--ToggleTradeSkillsInventory()
 	local tAnchors = {}
 	tAnchors.nLeft, tAnchors.nTop, tAnchors.nRight, tAnchors.nBottom = self.wndMain:GetAnchorOffsets()
@@ -482,25 +482,25 @@ end
 -- Salvage All
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnSalvageAllBtn(wndHandler, wndControl)
+function VikingInventoryBag:OnSalvageAllBtn(wndHandler, wndControl)
 	Event_FireGenericEvent("RequestSalvageAll", tAnchors)
 end
 
-function InventoryBag:OnDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
+function VikingInventoryBag:OnDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
 	if strType == "DDBagItem" and self.wndMain:FindChild("SalvageAllBtn"):GetData() then
 		self:InvokeSalvageConfirmWindow(iData)
 	end
 	return false
 end
 
-function InventoryBag:OnQueryDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
+function VikingInventoryBag:OnQueryDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
 	if strType == "DDBagItem" and self.wndMain:FindChild("SalvageAllBtn"):GetData() then
 		return Apollo.DragDropQueryResult.Accept
 	end
 	return Apollo.DragDropQueryResult.Ignore
 end
 
-function InventoryBag:OnDragDropNotifySalvage(wndHandler, wndControl, bMe) -- TODO: We can probably replace this with a button mouse over state
+function VikingInventoryBag:OnDragDropNotifySalvage(wndHandler, wndControl, bMe) -- TODO: We can probably replace this with a button mouse over state
 	if bMe and self.wndMain:FindChild("SalvageIcon"):GetData() then
 		--self.wndMain:FindChild("SalvageIcon"):SetSprite("CRB_Inventory:InvBtn_SalvageToggleFlyby")
 		--self.wndMain:FindChild("TextActionPrompt_Salvage"):Show(true)
@@ -514,15 +514,15 @@ end
 -- Virtual Inventory
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnQuestObjectiveUpdated()
+function VikingInventoryBag:OnQuestObjectiveUpdated()
 	self:UpdateVirtualItemInventory()
 end
 
-function InventoryBag:OnChallengeUpdated()
+function VikingInventoryBag:OnChallengeUpdated()
 	self:UpdateVirtualItemInventory()
 end
 
-function InventoryBag:UpdateVirtualItemInventory()
+function VikingInventoryBag:UpdateVirtualItemInventory()
 	local tVirtualItems = Item.GetVirtualItems()
 	local bThereAreItems = #tVirtualItems > 0
 
@@ -582,7 +582,7 @@ end
 -- Drag and Drop
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnBagDragDropCancel(wndHandler, wndControl, strType, iData, eReason)
+function VikingInventoryBag:OnBagDragDropCancel(wndHandler, wndControl, strType, iData, eReason)
 	if strType ~= "DDBagItem" or eReason == Apollo.DragDropCancelReason.EscapeKey or eReason == Apollo.DragDropCancelReason.ClickedOnNothing then
 		return false
 	end
@@ -594,21 +594,21 @@ function InventoryBag:OnBagDragDropCancel(wndHandler, wndControl, strType, iData
 end
 
 -- Trash Icon
-function InventoryBag:OnDragDropTrash(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
+function VikingInventoryBag:OnDragDropTrash(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
 	if strType == "DDBagItem" then
 		self:InvokeDeleteConfirmWindow(iData)
 	end
 	return false
 end
 
-function InventoryBag:OnQueryDragDropTrash(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
+function VikingInventoryBag:OnQueryDragDropTrash(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
 	if strType == "DDBagItem" then
 		return Apollo.DragDropQueryResult.Accept
 	end
 	return Apollo.DragDropQueryResult.Ignore
 end
 
-function InventoryBag:OnDragDropNotifyTrash(wndHandler, wndControl, bMe) -- TODO: We can probably replace this with a button mouse over state
+function VikingInventoryBag:OnDragDropNotifyTrash(wndHandler, wndControl, bMe) -- TODO: We can probably replace this with a button mouse over state
 	if bMe then
 		self.wndMain:FindChild("TrashIcon"):SetSprite("CRB_Inventory:InvBtn_TrashToggleFlyby")
 		self.wndMain:FindChild("TextActionPrompt_Trash"):Show(true)
@@ -620,21 +620,21 @@ end
 -- End Trash Icon
 
 -- Salvage Icon
-function InventoryBag:OnDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
+function VikingInventoryBag:OnDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
 	if strType == "DDBagItem" and self.wndMain:FindChild("SalvageIcon"):GetData() then
 		self:InvokeSalvageConfirmWindow(iData)
 	end
 	return false
 end
 
-function InventoryBag:OnQueryDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
+function VikingInventoryBag:OnQueryDragDropSalvage(wndHandler, wndControl, nX, nY, wndSource, strType, iData)
 	if strType == "DDBagItem" and self.wndMain:FindChild("SalvageIcon"):GetData() then
 		return Apollo.DragDropQueryResult.Accept
 	end
 	return Apollo.DragDropQueryResult.Ignore
 end
 
-function InventoryBag:OnDragDropNotifySalvage(wndHandler, wndControl, bMe) -- TODO: We can probably replace this with a button mouse over state
+function VikingInventoryBag:OnDragDropNotifySalvage(wndHandler, wndControl, bMe) -- TODO: We can probably replace this with a button mouse over state
 	if bMe and self.wndMain:FindChild("SalvageIcon"):GetData() then
 		self.wndMain:FindChild("SalvageIcon"):SetSprite("CRB_Inventory:InvBtn_SalvageToggleFlyby")
 		self.wndMain:FindChild("TextActionPrompt_Salvage"):Show(true)
@@ -645,7 +645,7 @@ function InventoryBag:OnDragDropNotifySalvage(wndHandler, wndControl, bMe) -- TO
 end
 -- End Salvage Icon
 
-function InventoryBag:OnSystemBeginDragDrop(wndSource, strType, iData)
+function VikingInventoryBag:OnSystemBeginDragDrop(wndSource, strType, iData)
 	if strType ~= "DDBagItem" then return end
 	self.wndMain:FindChild("TextActionPrompt_Trash"):Show(false)
 	self.wndMain:FindChild("TextActionPrompt_Salvage"):Show(false)
@@ -663,7 +663,7 @@ function InventoryBag:OnSystemBeginDragDrop(wndSource, strType, iData)
 	Sound.Play(Sound.PlayUI45LiftVirtual)
 end
 
-function InventoryBag:OnSystemEndDragDrop(strType, iData)
+function VikingInventoryBag:OnSystemEndDragDrop(strType, iData)
 	if not self.wndMain or not self.wndMain:IsValid() or not self.wndMain:FindChild("TrashIcon") or strType == "DDGuildBankItem" or strType == "DDWarPartyBankItem" or strType == "DDGuildBankItemSplitStack" then
 		return -- TODO Investigate if there are other types
 	end
@@ -681,13 +681,13 @@ end
 -- Item Sorting
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnOptionsSortItemsOff(wndHandler, wndControl)
+function VikingInventoryBag:OnOptionsSortItemsOff(wndHandler, wndControl)
 	self.bShouldSortItems = false
 	self.wndMainBagWindow:SetSort(self.bShouldSortItems)
 	self.wndIconBtnSortDropDown:SetCheck(false)
 end
 
-function InventoryBag:OnOptionsSortItemsName(wndHandler, wndControl)
+function VikingInventoryBag:OnOptionsSortItemsName(wndHandler, wndControl)
 	self.bShouldSortItems = true
 	self.nSortItemType = 1
 	self.wndMainBagWindow:SetSort(self.bShouldSortItems)
@@ -695,7 +695,7 @@ function InventoryBag:OnOptionsSortItemsName(wndHandler, wndControl)
 	self.wndIconBtnSortDropDown:SetCheck(false)
 end
 
-function InventoryBag:OnOptionsSortItemsByCategory(wndHandler, wndControl)
+function VikingInventoryBag:OnOptionsSortItemsByCategory(wndHandler, wndControl)
 	self.bShouldSortItems = true
 	self.nSortItemType = 2
 	self.wndMainBagWindow:SetSort(self.bShouldSortItems)
@@ -703,7 +703,7 @@ function InventoryBag:OnOptionsSortItemsByCategory(wndHandler, wndControl)
 	self.wndIconBtnSortDropDown:SetCheck(false)
 end
 
-function InventoryBag:OnOptionsSortItemsByQuality(wndHandler, wndControl)
+function VikingInventoryBag:OnOptionsSortItemsByQuality(wndHandler, wndControl)
 	self.bShouldSortItems = true
 	self.nSortItemType = 3
 	self.wndMainBagWindow:SetSort(self.bShouldSortItems)
@@ -715,7 +715,7 @@ end
 -- Delete/Salvage Screen
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:InvokeDeleteConfirmWindow(iData) 
+function VikingInventoryBag:InvokeDeleteConfirmWindow(iData) 
 	local itemData = Item.GetItemFromInventoryLoc(iData)
 	if itemData and not itemData:CanDelete() then
 		return
@@ -728,7 +728,7 @@ function InventoryBag:InvokeDeleteConfirmWindow(iData)
 	Sound.Play(Sound.PlayUI55ErrorVirtual)
 end
 
-function InventoryBag:InvokeSalvageConfirmWindow(iData)
+function VikingInventoryBag:InvokeSalvageConfirmWindow(iData)
 	self.wndSalvageConfirm:SetData(iData)
 	self.wndSalvageConfirm:Show(true)
 	self.wndSalvageConfirm:ToFront()
@@ -738,23 +738,23 @@ function InventoryBag:InvokeSalvageConfirmWindow(iData)
 end
 
 -- TODO SECURITY: These confirmations are entirely a UI concept. Code should have a allow/disallow.
-function InventoryBag:OnDeleteCancel()
+function VikingInventoryBag:OnDeleteCancel()
 	self.wndDeleteConfirm:SetData(nil)
 	self.wndDeleteConfirm:Close()
 	self.wndMain:FindChild("DragDropMouseBlocker"):Show(false)
 end
 
-function InventoryBag:OnSalvageCancel()
+function VikingInventoryBag:OnSalvageCancel()
 	self.wndSalvageConfirm:SetData(nil)
 	self.wndSalvageConfirm:Close()
 	self.wndMain:FindChild("DragDropMouseBlocker"):Show(false)
 end
 
-function InventoryBag:OnDeleteConfirm()
+function VikingInventoryBag:OnDeleteConfirm()
 	self:OnDeleteCancel()
 end
 
-function InventoryBag:OnSalvageConfirm()
+function VikingInventoryBag:OnSalvageConfirm()
 	self:OnSalvageCancel()
 end
 
@@ -762,7 +762,7 @@ end
 -- Stack Splitting
 -----------------------------------------------------------------------------------------------
 
-function InventoryBag:OnSplitItemStack(item)
+function VikingInventoryBag:OnSplitItemStack(item)
 	if not item then return end
 	local wndSplit = self.wndMain:FindChild("SplitStackContainer")
 	local nStackCount = item:GetStackCount()
@@ -776,18 +776,18 @@ function InventoryBag:OnSplitItemStack(item)
 	wndSplit:Show(true)
 end
 
-function InventoryBag:OnSplitStackCloseClick()
+function VikingInventoryBag:OnSplitStackCloseClick()
 	self.wndMain:FindChild("SplitStackContainer"):Show(false)
 end
 
-function InventoryBag:OnSplitStackConfirm(wndHandler, wndCtrl)
+function VikingInventoryBag:OnSplitStackConfirm(wndHandler, wndCtrl)
 	local wndSplit = self.wndMain:FindChild("SplitStackContainer")
 	local tItem = wndSplit:GetData()
 	wndSplit:Show(false)
 	self.wndMain:FindChild("MainBagWindow"):StartSplitStack(tItem, wndSplit:FindChild("SplitValue"):GetValue())
 end
 
-function InventoryBag:OnGenerateTooltip(wndControl, wndHandler, tType, item)
+function VikingInventoryBag:OnGenerateTooltip(wndControl, wndHandler, tType, item)
 	if wndControl ~= wndHandler then return end
 	wndControl:SetTooltipDoc(nil)
 	if item ~= nil then
@@ -797,5 +797,5 @@ function InventoryBag:OnGenerateTooltip(wndControl, wndHandler, tType, item)
 	end
 end
 
-local InventoryBagInst = InventoryBag:new()
+local InventoryBagInst = VikingInventoryBag:new()
 InventoryBagInst:Init()
