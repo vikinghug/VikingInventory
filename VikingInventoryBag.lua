@@ -63,10 +63,10 @@ function VikingInventoryBag:OnRestore(eType, tSavedData)
 		if self.wndMain then
 			self.wndMainBagWindow:SetSort(self.bShouldSortItems)
 			self.wndMainBagWindow:SetItemSortComparer(ktSortFunctions[self.nSortItemType])
-			self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:ItemSortPrompt:IconBtnSortOff"):SetCheck(not self.bShouldSortItems)
-			self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:ItemSortPrompt:IconBtnSortAlpha"):SetCheck(self.bShouldSortItems and self.nSortItemType == 1)
-			self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:ItemSortPrompt:IconBtnSortCategory"):SetCheck(self.bShouldSortItems and self.nSortItemType == 2)
-			self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:ItemSortPrompt:IconBtnSortQuality"):SetCheck(self.bShouldSortItems and self.nSortItemType == 3)
+			self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:ItemSortPrompt:IconBtnSortOff"):SetCheck(not self.bShouldSortItems)
+			self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:ItemSortPrompt:IconBtnSortAlpha"):SetCheck(self.bShouldSortItems and self.nSortItemType == 1)
+			self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:ItemSortPrompt:IconBtnSortCategory"):SetCheck(self.bShouldSortItems and self.nSortItemType == 2)
+			self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:ItemSortPrompt:IconBtnSortQuality"):SetCheck(self.bShouldSortItems and self.nSortItemType == 3)
 		end
 	end
 end
@@ -219,7 +219,7 @@ function VikingInventoryBag:OnDocumentReady()
 
 	local nLeft, nTop, nRight, nBottom = self.wndMain:GetAnchorOffsets()
 	self.nFirstEverWidth = nRight - nLeft
-	self.wndMain:SetSizingMinimum(238, 270)
+	self.wndMain:SetSizingMinimum(260, 260)
 
 	nLeft, nTop, nRight, nBottom = self.wndMain:FindChild("MainGridContainer"):GetAnchorOffsets()
 	self.nFirstEverMainGridHeight = nBottom - nTop
@@ -259,12 +259,12 @@ function VikingInventoryBag:OnDocumentReady()
 	self.wndMainBagWindow = self.wndMain:FindChild("MainBagWindow")
 	self.wndMainBagWindow:SetItemSortComparer(ktSortFunctions[self.nSortItemType])
 	self.wndMainBagWindow:SetSort(self.bShouldSortItems)
-	self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortOff"):SetCheck(not self.bShouldSortItems)
-	self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortAlpha"):SetCheck(self.bShouldSortItems and self.nSortItemType == 1)
-	self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortCategory"):SetCheck(self.bShouldSortItems and self.nSortItemType == 2)
-	self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortQuality"):SetCheck(self.bShouldSortItems and self.nSortItemType == 3)
+	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortOff"):SetCheck(not self.bShouldSortItems)
+	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortAlpha"):SetCheck(self.bShouldSortItems and self.nSortItemType == 1)
+	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortCategory"):SetCheck(self.bShouldSortItems and self.nSortItemType == 2)
+	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortQuality"):SetCheck(self.bShouldSortItems and self.nSortItemType == 3)
 	
-	self.wndIconBtnSortDropDown = self.wndMain:FindChild("OptionsContainer:OptionsContainerFrame:OptionsConfigureSort:IconBtnSortDropDown")
+	self.wndIconBtnSortDropDown = self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown")
 	self.wndIconBtnSortDropDown:AttachWindow(self.wndIconBtnSortDropDown:FindChild("ItemSortPrompt"))
 end
 
@@ -346,7 +346,7 @@ function VikingInventoryBag:OnPlayerCurrencyChanged()
 end
 
 function VikingInventoryBag:UpdateTitle()
-	self.wndMain:FindChild("InventoryTitleText"):SetText(String_GetWeaselString(Apollo.GetString("Inventory_TitleText"), GameLib.GetPlayerUnit()))
+	self.wndMain:FindChild("InventoryTitle"):SetText(String_GetWeaselString(Apollo.GetString("Inventory_TitleText"), GameLib.GetPlayerUnit()))
 end
 
 function VikingInventoryBag:UpdateBagSlotItems() -- update our bag display
@@ -574,8 +574,8 @@ function VikingInventoryBag:UpdateVirtualItemInventory()
 	end
 	self.wndMain:FindChild("BGVirtual"):SetAnchorOffsets(nLeft, nTop, nRight, nBottom)
 
-	local nBagLeft, nBagTop, nBagRight, nBagBottom = self.wndMain:FindChild("BGGridArt"):GetAnchorOffsets()
-	self.wndMain:FindChild("BGGridArt"):SetAnchorOffsets(nBagLeft, nBagTop, nBagRight, nTop)
+	local nBagLeft, nBagTop, nBagRight, nBagBottom = self.wndMain:FindChild("GridContainer"):GetAnchorOffsets()
+	self.wndMain:FindChild("GridContainer"):SetAnchorOffsets(nBagLeft, nBagTop, nBagRight, nTop)
 end
 
 -----------------------------------------------------------------------------------------------
