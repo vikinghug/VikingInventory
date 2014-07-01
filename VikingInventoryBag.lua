@@ -22,10 +22,10 @@ function VikingInventoryBag:new(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
-	
+
 	o.bShouldSortItems = false
 	o.nSortItemType = 1
-	
+
 	return o
 end
 
@@ -41,14 +41,14 @@ function VikingInventoryBag:OnSave(eType)
 			nSortItemType = self.nSortItemType,
 		}
 	end
-	
+
 	return nil
 end
 
 function VikingInventoryBag:OnRestore(eType, tSavedData)
 	if eType == GameLib.CodeEnumAddonSaveLevel.Account then
 		self.tSavedData = tSavedData
-		
+
 		if not tSavedData or tSavedData.nSaveVersion ~= knSaveVersion then
 			return
 		end
@@ -56,10 +56,10 @@ function VikingInventoryBag:OnRestore(eType, tSavedData)
 		if not tSavedData or tSavedData.nSaveVersion ~= knSaveVersion then
 			return
 		end
-	
+
 		self.bShouldSortItems = tSavedData.bShouldSortItems or false
 		self.nSortItemType = tSavedData.nSortItemType or 1
-		
+
 		if self.wndMain then
 			self.wndMainBagWindow:SetSort(self.bShouldSortItems)
 			self.wndMainBagWindow:SetItemSortComparer(ktSortFunctions[self.nSortItemType])
@@ -74,7 +74,7 @@ end
 
 function VikingInventoryBag:OnLoad()
 	self.xmlDoc = XmlDoc.CreateFromFile("VikingInventoryBag.xml")
-	self.xmlDoc:RegisterCallback("OnDocumentReady", self) 
+	self.xmlDoc:RegisterCallback("OnDocumentReady", self)
 end
 
 local fnSortItemsByName = function(itemLeft, itemRight)
@@ -87,7 +87,7 @@ local fnSortItemsByName = function(itemLeft, itemRight)
 	if itemLeft == nil and itemRight then
 		return 1
 	end
-	
+
 	local strLeftName = itemLeft:GetName()
 	local strRightName = itemRight:GetName()
 	if strLeftName < strRightName then
@@ -96,7 +96,7 @@ local fnSortItemsByName = function(itemLeft, itemRight)
 	if strLeftName > strRightName then
 		return 1
 	end
-	
+
 	return 0
 end
 
@@ -110,7 +110,7 @@ local fnSortItemsByCategory = function(itemLeft, itemRight)
 	if itemLeft == nil and itemRight then
 		return 1
 	end
-	
+
 	local strLeftName = itemLeft:GetItemCategoryName()
 	local strRightName = itemRight:GetItemCategoryName()
 	if strLeftName < strRightName then
@@ -119,7 +119,7 @@ local fnSortItemsByCategory = function(itemLeft, itemRight)
 	if strLeftName > strRightName then
 		return 1
 	end
-	
+
 	local strLeftName = itemLeft:GetName()
 	local strRightName = itemRight:GetName()
 	if strLeftName < strRightName then
@@ -128,7 +128,7 @@ local fnSortItemsByCategory = function(itemLeft, itemRight)
 	if strLeftName > strRightName then
 		return 1
 	end
-	
+
 	return 0
 end
 
@@ -142,7 +142,7 @@ local fnSortItemsByQuality = function(itemLeft, itemRight)
 	if itemLeft == nil and itemRight then
 		return 1
 	end
-	
+
 	local eLeftQuality = itemLeft:GetItemQuality()
 	local eRightQuality = itemRight:GetItemQuality()
 	if eLeftQuality > eRightQuality then
@@ -151,7 +151,7 @@ local fnSortItemsByQuality = function(itemLeft, itemRight)
 	if eLeftQuality < eRightQuality then
 		return 1
 	end
-	
+
 	local strLeftName = itemLeft:GetName()
 	local strRightName = itemRight:GetName()
 	if strLeftName < strRightName then
@@ -160,7 +160,7 @@ local fnSortItemsByQuality = function(itemLeft, itemRight)
 	if strLeftName > strRightName then
 		return 1
 	end
-	
+
 	return 0
 end
 
@@ -168,104 +168,104 @@ local ktSortFunctions = {fnSortItemsByName, fnSortItemsByCategory, fnSortItemsBy
 
 -- TODO: Mark items as viewed
 function VikingInventoryBag:OnDocumentReady()
-	if  self.xmlDoc == nil then
-		return
-	end
-	
-	Apollo.RegisterEventHandler("InterfaceMenuListHasLoaded", 				"OnInterfaceMenuListHasLoaded", self)
-	Apollo.RegisterEventHandler("WindowManagementReady", 					"OnWindowManagementReady", self)
+  if  self.xmlDoc == nil then
+    return
+  end
 
-	Apollo.RegisterEventHandler("InterfaceMenu_ToggleInventory", 			"OnToggleVisibility", self) -- TODO: The datachron attachment needs to be brought over
-	Apollo.RegisterEventHandler("GuildBank_ShowPersonalInventory", 			"OnToggleVisibilityAlways", self)
+  Apollo.RegisterEventHandler("InterfaceMenuListHasLoaded",         "OnInterfaceMenuListHasLoaded", self)
+  Apollo.RegisterEventHandler("WindowManagementReady",          "OnWindowManagementReady", self)
 
-	Apollo.RegisterEventHandler("PersonaUpdateCharacterStats", 				"UpdateBagSlotItems", self) -- using this for bag changes
-	Apollo.RegisterEventHandler("PlayerPathMissionUpdate", 					"OnQuestObjectiveUpdated", self) -- route to same event
-	Apollo.RegisterEventHandler("QuestObjectiveUpdated", 					"OnQuestObjectiveUpdated", self)
-	Apollo.RegisterEventHandler("PlayerPathRefresh", 						"OnQuestObjectiveUpdated", self) -- route to same event
-	Apollo.RegisterEventHandler("QuestStateChanged", 						"OnQuestObjectiveUpdated", self)
-	Apollo.RegisterEventHandler("ToggleInventory", 							"OnToggleVisibility", self) -- todo: figure out if show inventory is needed
-	Apollo.RegisterEventHandler("ShowInventory", 							"OnToggleVisibility", self)
-	Apollo.RegisterEventHandler("SplitItemStack", 							"OnSplitItemStack", self)
-	Apollo.RegisterEventHandler("ChallengeUpdated", 						"OnChallengeUpdated", self)
-	Apollo.RegisterEventHandler("CharacterCreated", 						"OnCharacterCreated", self)
+  Apollo.RegisterEventHandler("InterfaceMenu_ToggleInventory",      "OnToggleVisibility", self) -- TODO: The datachron attachment needs to be brought over
+  Apollo.RegisterEventHandler("GuildBank_ShowPersonalInventory",      "OnToggleVisibilityAlways", self)
 
-	Apollo.RegisterEventHandler("PlayerCurrencyChanged",					"OnPlayerCurrencyChanged", self)
-	Apollo.RegisterEventHandler("PlayerTitleChange", 						"UpdateTitle", self)
-	
-	Apollo.RegisterEventHandler("LevelUpUnlock_Inventory_Salvage", "OnLevelUpUnlock_Inventory_Salvage", self)
-	Apollo.RegisterEventHandler("LevelUpUnlock_Path_Item", "OnLevelUpUnlock_Path_Item", self)
+  Apollo.RegisterEventHandler("PersonaUpdateCharacterStats",        "UpdateBagSlotItems", self) -- using this for bag changes
+  Apollo.RegisterEventHandler("PlayerPathMissionUpdate",          "OnQuestObjectiveUpdated", self) -- route to same event
+  Apollo.RegisterEventHandler("QuestObjectiveUpdated",          "OnQuestObjectiveUpdated", self)
+  Apollo.RegisterEventHandler("PlayerPathRefresh",            "OnQuestObjectiveUpdated", self) -- route to same event
+  Apollo.RegisterEventHandler("QuestStateChanged",            "OnQuestObjectiveUpdated", self)
+  Apollo.RegisterEventHandler("ToggleInventory",              "OnToggleVisibility", self) -- todo: figure out if show inventory is needed
+  Apollo.RegisterEventHandler("ShowInventory",              "OnToggleVisibility", self)
+  Apollo.RegisterEventHandler("SplitItemStack",               "OnSplitItemStack", self)
+  Apollo.RegisterEventHandler("ChallengeUpdated",             "OnChallengeUpdated", self)
+  Apollo.RegisterEventHandler("CharacterCreated",             "OnCharacterCreated", self)
 
-	--Apollo.RegisterTimerHandler("InventoryUpdateTimer", 					"OnUpdateTimer", self)
-	--Apollo.CreateTimer("InventoryUpdateTimer", 1.0, true)
-	--Apollo.StopTimer("InventoryUpdateTimer")
+  Apollo.RegisterEventHandler("PlayerCurrencyChanged",          "OnPlayerCurrencyChanged", self)
+  Apollo.RegisterEventHandler("PlayerTitleChange",            "UpdateTitle", self)
 
-	-- TODO Refactor: Investigate these two, we may not need them if we can detect the origin window of a drag
-	Apollo.RegisterEventHandler("DragDropSysBegin", "OnSystemBeginDragDrop", self)
-	Apollo.RegisterEventHandler("DragDropSysEnd", 	"OnSystemEndDragDrop", self)
+  Apollo.RegisterEventHandler("LevelUpUnlock_Inventory_Salvage", "OnLevelUpUnlock_Inventory_Salvage", self)
+  Apollo.RegisterEventHandler("LevelUpUnlock_Path_Item", "OnLevelUpUnlock_Path_Item", self)
 
-	self.wndDeleteConfirm 	= Apollo.LoadForm(self.xmlDoc, "InventoryDeleteNotice", nil, self)
-	self.wndSalvageConfirm 	= Apollo.LoadForm(self.xmlDoc, "InventorySalvageNotice", nil, self)
-	self.wndMain 			= Apollo.LoadForm(self.xmlDoc, "VikingInventoryBag", nil, self)
-	self.wndMain:FindChild("VirtualInvToggleBtn"):AttachWindow(self.wndMain:FindChild("VirtualInvContainer"))
-	self.wndMain:Show(false, true)
-	self.wndSalvageConfirm:Show(false, true)
-	self.wndDeleteConfirm:Show(false, true)
+  --Apollo.RegisterTimerHandler("InventoryUpdateTimer",           "OnUpdateTimer", self)
+  --Apollo.CreateTimer("InventoryUpdateTimer", 1.0, true)
+  --Apollo.StopTimer("InventoryUpdateTimer")
 
-	-- Variables
-	self.nBoxSize = knLargeIconOption
-	self.bFirstLoad = true
-	self.nLastBagMaxSize = 0
-	self.nLastWndMainWidth = self.wndMain:GetWidth()
+  -- TODO Refactor: Investigate these two, we may not need them if we can detect the origin window of a drag
+  Apollo.RegisterEventHandler("DragDropSysBegin", "OnSystemBeginDragDrop", self)
+  Apollo.RegisterEventHandler("DragDropSysEnd",   "OnSystemEndDragDrop", self)
 
-	local nLeft, nTop, nRight, nBottom = self.wndMain:GetAnchorOffsets()
-	self.nFirstEverWidth = nRight - nLeft
-	self.wndMain:SetSizingMinimum(260, 260)
+  self.wndDeleteConfirm   = Apollo.LoadForm(self.xmlDoc, "InventoryDeleteNotice", nil, self)
+  self.wndSalvageConfirm  = Apollo.LoadForm(self.xmlDoc, "InventorySalvageNotice", nil, self)
+  self.wndMain      = Apollo.LoadForm(self.xmlDoc, "VikingInventoryBag", nil, self)
+  self.wndMain:FindChild("VirtualInvToggleBtn"):AttachWindow(self.wndMain:FindChild("VirtualInvContainer"))
+  self.wndMain:Show(false, true)
+  self.wndSalvageConfirm:Show(false, true)
+  self.wndDeleteConfirm:Show(false, true)
 
-	nLeft, nTop, nRight, nBottom = self.wndMain:FindChild("MainGridContainer"):GetAnchorOffsets()
-	self.nFirstEverMainGridHeight = nBottom - nTop
+  -- Variables
+  self.nBoxSize = knLargeIconOption
+  self.bFirstLoad = true
+  self.nLastBagMaxSize = 0
+  self.nLastWndMainWidth = self.wndMain:GetWidth()
 
-	self.tBagSlots = {}
-	self.tBagCounts = {}
-	for idx = 1, knMaxBags do
-		self.tBagSlots[idx] = self.wndMain:FindChild("BagBtn" .. idx)
-		self.tBagCounts[idx] = self.wndMain:FindChild("BagCount" .. idx)
-	end
+  local nLeft, nTop, nRight, nBottom = self.wndMain:GetAnchorOffsets()
+  self.nFirstEverWidth = nRight - nLeft
+  self.wndMain:SetSizingMinimum(260, 260)
 
-	self.nEquippedBagCount = 0 -- used to identify bag updates
+  nLeft, nTop, nRight, nBottom = self.wndMain:FindChild("MainGridContainer"):GetAnchorOffsets()
+  self.nFirstEverMainGridHeight = nBottom - nTop
 
-	self:UpdateSquareSize()
+  self.tBagSlots = {}
+  self.tBagCounts = {}
+  for idx = 1, knMaxBags do
+    self.tBagSlots[idx] = self.wndMain:FindChild("BagBtn" .. idx)
+    self.tBagCounts[idx] = self.wndMain:FindChild("BagCount" .. idx)
+  end
 
-	--Alt Curency Display
-	for idx = 1, #karCurrency do
-		local tData = karCurrency[idx]
-		local wnd = Apollo.LoadForm(self.xmlDoc, "PickerEntry", self.wndMain:FindChild("OptionsConfigureCurrencyList"), self)
-		wnd:FindChild("EntryCash"):SetMoneySystem(tData.eType) -- We'll fill in the amount during the timer
-		wnd:FindChild("PickerEntryBtn"):SetData(idx)
-		wnd:FindChild("PickerEntryBtn"):SetCheck(idx == 1)
-		wnd:FindChild("PickerEntryBtnText"):SetText(tData.strTitle)
-		wnd:FindChild("PickerEntryBtn"):SetTooltip(tData.strDescription)
-		tData.wnd = wnd
-	end
-	self.wndMain:FindChild("OptionsConfigureCurrencyList"):ArrangeChildrenVert(0)
+  self.nEquippedBagCount = 0 -- used to identify bag updates
 
-	if GameLib.GetPlayerUnit() then
-		self:OnCharacterCreated()
-	end
-	
-	if self.locSavedWindowLoc then
-		self.wndMain:MoveToLocation(self.locSavedWindowLoc)
-	end
-	
-	self.wndMainBagWindow = self.wndMain:FindChild("MainBagWindow")
-	self.wndMainBagWindow:SetItemSortComparer(ktSortFunctions[self.nSortItemType])
-	self.wndMainBagWindow:SetSort(self.bShouldSortItems)
-	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortOff"):SetCheck(not self.bShouldSortItems)
-	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortAlpha"):SetCheck(self.bShouldSortItems and self.nSortItemType == 1)
-	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortCategory"):SetCheck(self.bShouldSortItems and self.nSortItemType == 2)
-	self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortQuality"):SetCheck(self.bShouldSortItems and self.nSortItemType == 3)
-	
-	self.wndIconBtnSortDropDown = self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown")
-	self.wndIconBtnSortDropDown:AttachWindow(self.wndIconBtnSortDropDown:FindChild("ItemSortPrompt"))
+  self:UpdateSquareSize()
+
+  --Alt Curency Display
+  for idx = 1, #karCurrency do
+    local tData = karCurrency[idx]
+    local wnd = Apollo.LoadForm(self.xmlDoc, "PickerEntry", self.wndMain:FindChild("OptionsConfigureCurrencyList"), self)
+    wnd:FindChild("EntryCash"):SetMoneySystem(tData.eType) -- We'll fill in the amount during the timer
+    wnd:FindChild("PickerEntryBtn"):SetData(idx)
+    wnd:FindChild("PickerEntryBtn"):SetCheck(idx == 1)
+    wnd:FindChild("PickerEntryBtnText"):SetText(tData.strTitle)
+    wnd:FindChild("PickerEntryBtn"):SetTooltip(tData.strDescription)
+    tData.wnd = wnd
+  end
+  self.wndMain:FindChild("OptionsConfigureCurrencyList"):ArrangeChildrenVert(0)
+
+  if GameLib.GetPlayerUnit() then
+    self:OnCharacterCreated()
+  end
+
+  if self.locSavedWindowLoc then
+    self.wndMain:MoveToLocation(self.locSavedWindowLoc)
+  end
+
+  self.wndMainBagWindow = self.wndMain:FindChild("MainBagWindow")
+  self.wndMainBagWindow:SetItemSortComparer(ktSortFunctions[self.nSortItemType])
+  -- self.wndMainBagWindow:SetSort(self.bShouldSortItems)
+  self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortOff"):SetCheck(not self.bShouldSortItems)
+  self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortAlpha"):SetCheck(self.bShouldSortItems and self.nSortItemType == 1)
+  self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortCategory"):SetCheck(self.bShouldSortItems and self.nSortItemType == 2)
+  self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown:ItemSortPrompt:IconBtnSortQuality"):SetCheck(self.bShouldSortItems and self.nSortItemType == 3)
+
+  self.wndIconBtnSortDropDown = self.wndMain:FindChild("OptionsContainer:OptionsConfigureSort:IconBtnSortDropDown")
+  self.wndIconBtnSortDropDown:AttachWindow(self.wndIconBtnSortDropDown:FindChild("ItemSortPrompt"))
 end
 
 function VikingInventoryBag:OnInterfaceMenuListHasLoaded()
@@ -275,7 +275,7 @@ end
 function VikingInventoryBag:OnWindowManagementReady()
 	Event_FireGenericEvent("WindowManagementAdd", {wnd = self.wndMain, strName = Apollo.GetString("InterfaceMenu_Inventory")})
 end
-	
+
 function VikingInventoryBag:OnCharacterCreated()
 	self:OnPlayerCurrencyChanged()
 	self:UpdateTitle()
@@ -376,7 +376,7 @@ function VikingInventoryBag:UpdateBagSlotItems() -- update our bag display
 	end
 end
 
-function VikingInventoryBag:OnBagBtnMouseEnter(wndHandler, wndControl)	
+function VikingInventoryBag:OnBagBtnMouseEnter(wndHandler, wndControl)
 end
 
 function VikingInventoryBag:OnBagBtnMouseExit(wndHandler, wndControl)
@@ -420,7 +420,7 @@ function VikingInventoryBag:OnOptionsMenuToggle(wndHandler, wndControl) -- Optio
 
 	self.wndMain:FindChild("IconBtnLarge"):SetCheck(self.nBoxSize == kLargeIconOption)
 	self.wndMain:FindChild("IconBtnSmall"):SetCheck(self.nBoxSize == kSmallIconOption)
-	
+
 	for key, wndCurr in pairs(self.wndMain:FindChild("OptionsConfigureCurrencyList"):GetChildren()) do
 		self:UpdateAltCash(wndCurr)
 	end
@@ -565,7 +565,7 @@ function VikingInventoryBag:UpdateVirtualItemInventory()
 	end
 
 	local nLeft, nTop, nRight, nBottom = self.wndMain:FindChild("BGVirtual"):GetAnchorOffsets()
-	nTop = nBottom 
+	nTop = nBottom
 	if bThereAreItems then
 		nTop = nBottom - self.nVirtualButtonHeight
 		if bShowQuestItems then
@@ -715,7 +715,7 @@ end
 -- Delete/Salvage Screen
 -----------------------------------------------------------------------------------------------
 
-function VikingInventoryBag:InvokeDeleteConfirmWindow(iData) 
+function VikingInventoryBag:InvokeDeleteConfirmWindow(iData)
 	local itemData = Item.GetItemFromInventoryLoc(iData)
 	if itemData and not itemData:CanDelete() then
 		return
