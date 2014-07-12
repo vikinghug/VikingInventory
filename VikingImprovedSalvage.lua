@@ -47,7 +47,7 @@ function VikingImprovedSalvage:OnDocumentReady()
 end
 
 function VikingImprovedSalvage:OnWindowManagementReady()
-	Event_FireGenericEvent("WindowManagementAdd", {wnd = self.wndMain, strName = Apollo.GetString("CRB_Salvage")})
+	Event_FireGenericEvent("WindowManagementAdd", {wnd = self.wndMain, strName = "Viking Salvage" })
 end
 
 --------------------//-----------------------------

@@ -273,7 +273,7 @@ function VikingInventoryBag:OnInterfaceMenuListHasLoaded()
 end
 
 function VikingInventoryBag:OnWindowManagementReady()
-	Event_FireGenericEvent("WindowManagementAdd", {wnd = self.wndMain, strName = Apollo.GetString("InterfaceMenu_Inventory")})
+	Event_FireGenericEvent("WindowManagementAdd", {wnd = self.wndMain, strName = "Viking Inventory")})
 end
 	
 function VikingInventoryBag:OnCharacterCreated()
