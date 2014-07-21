@@ -34,6 +34,7 @@ function VikingImprovedSalvage:OnDocumentReady()
 	self.wndMain = Apollo.LoadForm(self.xmlDoc, "VikingImprovedSalvageForm", nil, self)
 	self.xmlDoc = nil
 	self.wndItemDisplay = self.wndMain:FindChild("ItemDisplayWindow")
+	self.scrappy = Apollo.GetAddon("Scrappy")
 	
 	if self.locSavedWindowLoc then
 		self.wndMain:MoveToLocation(self.locSavedWindowLoc)
@@ -52,17 +53,19 @@ end
 
 --------------------//-----------------------------
 function VikingImprovedSalvage:OnSalvageAll()
-	self.arItemList = {}
-	self.nItemIndex = 1
+	if self.scrappy == nil then
+		self.arItemList = {}
+		self.nItemIndex = 1
 	
-	local tInvItems = GameLib.GetPlayerUnit():GetInventoryItems()
-	for idx, tItem in ipairs(tInvItems) do
-		if tItem and tItem.itemInBag and tItem.itemInBag:CanSalvage() then
-			table.insert(self.arItemList, tItem.itemInBag)
+		local tInvItems = GameLib.GetPlayerUnit():GetInventoryItems()
+		for idx, tItem in ipairs(tInvItems) do
+			if tItem and tItem.itemInBag and tItem.itemInBag:CanSalvage() then
+				table.insert(self.arItemList, tItem.itemInBag)
+			end
 		end
-	end
 
-	self:RedrawAll()
+		self:RedrawAll()
+	end
 end
 
 function VikingImprovedSalvage:RedrawAll()
