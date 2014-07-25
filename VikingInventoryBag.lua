@@ -10,8 +10,8 @@ local knLargeIconOption = 48
 local knMaxBags = 4 -- how many bags can the player have
 local knSaveVersion = 3
 
-local karCurrency =     -- Alt currency table; re-indexing the enums so they don't have to be in sequence code-side (and removing cash)
-{             -- To add a new currency just add an entry to the table; the UI will do the rest. Idx == 1 will be the default one shown
+local karCurrency = {   -- Alt currency table; re-indexing the enums so they don't have to be in sequence code-side (and removing cash)
+                        -- To add a new currency just add an entry to the table; the UI will do the rest. Idx == 1 will be the default one shown
   {eType = Money.CodeEnumCurrencyType.Renown,       strTitle = Apollo.GetString("CRB_Renown"),          strDescription = Apollo.GetString("CRB_Renown_Desc")},
   {eType = Money.CodeEnumCurrencyType.ElderGems,        strTitle = Apollo.GetString("CRB_Elder_Gems"),        strDescription = Apollo.GetString("CRB_Elder_Gems_Desc")},
   {eType = Money.CodeEnumCurrencyType.Prestige,       strTitle = Apollo.GetString("CRB_Prestige"),        strDescription = Apollo.GetString("CRB_Prestige_Desc")},
